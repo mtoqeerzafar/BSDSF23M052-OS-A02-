@@ -106,3 +106,51 @@ The & (bitwise AND) operator isolates specific bits to test if they’re set.
 
 
 
+
+Feature 3:
+
+[200~REPORT.md Answers
+Q1: Explain the general logic for printing items in a “down then across” columnar format. Why is a simple single loop through the list of filenames insufficient for this task?
+
+Answer:
+The "down-then-across" column format means filenames are printed top-to-bottom in each column before moving horizontally to the next column.
+For example:
+
+A   D   G
+B   E   H
+C   F
+
+
+To achieve this, we first determine:
+
+The total number of filenames (n)
+
+The number of columns that can fit based on terminal width
+
+The number of rows needed per column
+
+We then print items using nested loops:
+
+The outer loop runs through rows
+
+The inner loop indexes each column’s element by (col * num_rows + row)
+
+A single loop is insufficient because filenames must be rearranged by their position in a grid — not printed linearly. A one-dimensional iteration would only print items across a single row, not in a grid aligned by columns.
+
+Q2: What is the purpose of the ioctl system call in this context? What would be the limitations of your program if you only used a fixed-width fallback (e.g., 80 columns) instead of detecting the terminal size?
+
+Answer:
+The ioctl system call is used to query terminal properties dynamically — specifically, to obtain the current width (number of columns) of the terminal window.
+This allows the program to adjust the number of filenames displayed per row according to the actual screen size.
+
+If we only used a fixed-width fallback (like 80 columns):
+
+The display would not adapt to different terminal sizes.
+
+On narrow screens, filenames would wrap awkwardly or overlap.
+
+On wide screens, excessive empty space would appear and fewer columns would be used than possible.
+
+It would reduce usability and responsiveness — the output would not resemble real ls behavior.
+
+Hence, ioctl provides a dynamic and user-friendly display layout.
