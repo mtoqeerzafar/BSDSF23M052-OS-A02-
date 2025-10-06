@@ -2,9 +2,10 @@
 
 CC = gcc
 CFLAGS = -Wall -Wextra -std=c99
-SRC = src/ls-v1.0.0.c
-OBJ = obj/ls-v1.0.0.o
-BIN = bin/ls
+SRC = src/ls-v1.1.0.c
+OBJ = obj/ls-v1.1.0.o
+BIN = bin/ls-v1.1.0
+
 
 all: $(BIN)
 
