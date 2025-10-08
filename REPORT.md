@@ -153,4 +153,47 @@ On wide screens, excessive empty space would appear and fewer columns would be u
 
 It would reduce usability and responsiveness — the output would not resemble real ls behavior.
 
-Hence, ioctl provides a dynamic and user-friendly display layout.
+Hence, ioctl provides a dynamic and user-friendly display layout
+
+
+Feature 4 :
+
+Q1: General logic for printing items in a “down then across” columnar format
+
+When displaying filenames “down then across,” the program fills each column vertically first before moving to the next column.
+A single linear loop cannot achieve this because it lists items row by row (horizontally).
+To print vertically, you must calculate:
+
+the number of rows (num_rows = ceil(total_files / num_columns)),
+
+and use nested indexing to access items in the order of columns.
+
+Example logic:
+
+for (row = 0; row < num_rows; row++) {
+    for (col = 0; col < num_cols; col++) {
+        index = row + col * num_rows;
+        if (index < total_files)
+            printf("%-*s", column_width, filenames[index]);
+    }
+    printf("\n");
+}
+
+
+This ensures items appear top-to-bottom, then left-to-right.
+
+Q2: Purpose of the ioctl system call
+
+ioctl(STDOUT_FILENO, TIOCGWINSZ, &w) is used to dynamically get the terminal’s current width and height in characters.
+This allows the program to:
+
+Adjust the number of columns that fit on the screen.
+
+Prevent text wrapping or misalignment when resizing the terminal.
+
+If only a fixed width (like 80 columns) were used:
+
+The output could appear misaligned or overflow on smaller screens.
+
+The display would waste space or look compressed on larger terminals.
+Dynamic detection ensures a responsive layout across environments..
