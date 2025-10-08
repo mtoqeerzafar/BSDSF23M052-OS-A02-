@@ -256,3 +256,95 @@ if (fileStat.st_mode & (S_IXUSR | S_IXGRP | S_IXOTH)) {
     // File is executable → print in green
 }
 
+
+
+Feature 7:
+
+
+Feature-7: ls-v1.6.0 – Recursive Listing (-R Option)
+1. In a recursive function, what is a "base case"? In the context of your recursive ls, what is the base case that stops the recursion from continuing forever?
+
+In recursion, a base case is the condition that terminates further recursive calls.
+Without it, the function would call itself indefinitely, leading to infinite recursion and a crash.
+
+In the recursive ls implementation, the base case is when:
+
+The function encounters a non-directory file, or
+
+It finds the special directories . (current) or .. (parent).
+
+These cases stop further recursion, preventing the function from re-entering the same directories repeatedly.
+
+Example:
+
+if (strcmp(name, ".") == 0 || strcmp(name, "..") == 0)
+    return;  // base case
+
+2. Explain why it is essential to construct a full path (e.g., "parent_dir/subdir") before making a recursive call. What would happen if you simply called do_ls("subdir") from within the do_ls("parent_dir") function call?
+
+It’s essential to construct the full path (like "parent_dir/subdir") because the program changes directories logically, not physically.
+Without the full path, the recursive call do_ls("subdir") would always try to open "subdir" relative to the current working directory, not relative to "parent_dir".
+
+If "subdir" exists only inside "parent_dir", this would result in:
+
+opendir("subdir") failing with "No such file or directory",
+
+Incorrect directory traversal, or
+
+Missing recursive listings.
+
+Thus, constructing the absolute or combined path ensures the recursive traversal moves correctly down the directory hierarchy.
+
+Example:
+
+snprintf(fullpath, sizeof(fullpath), "%s/%s", parent, child);
+do_ls(fullpath, mode);
+
+
+✅ Summary
+
+Added support for -R (recursive listing).
+
+Implemented recursive directory traversal with safe path concatenation.
+
+Prevented infinite recursion via base cases for . and ...
+
+Integrated with colorized display from previous versions.
+
+Clean memory management for dynamically allocated filename arrays.
+
+
+feature 7:
+
+[200~1. In a recursive function, what is a "base case"?
+
+A base case is the condition in a recursive function that stops further recursive calls.
+Without a base case, the function would keep calling itself indefinitely, leading to a stack overflow error.
+
+In the context of the recursive ls command:
+The base case occurs when the function reaches a directory that has no subdirectories or when an entry is not a directory (e.g., a regular file).
+At that point, the recursion stops — the function lists the current directory’s contents and then returns.
+
+Example (simplified logic):
+
+if (!S_ISDIR(st.st_mode))
+    return;   // Base case — stop recursion for non-directory files
+
+2. Why is it essential to construct a full path (e.g., "parent_dir/subdir") before making a recursive call?
+
+It is essential to build the full path because the recursive call needs to know the exact location of the subdirectory in the filesystem.
+If you only passed "subdir" instead of "parent_dir/subdir", the program would incorrectly look for "subdir" in the current working directory, not inside its parent directory.
+
+For example:
+
+✅ Correct: do_ls("src/utils") — looks inside src/utils
+
+❌ Wrong: do_ls("utils") — looks for utils in the current directory, not in src
+
+Result if full path is not used:
+
+The recursion would fail to find the correct subdirectory.
+
+It could repeatedly scan the same directories, leading to incorrect or infinite recursion.
+
+Hence: Constructing the full path ensures that each recursive call correctly points to the subdirectory being processed.
