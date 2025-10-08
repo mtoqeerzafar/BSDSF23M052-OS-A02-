@@ -196,4 +196,63 @@ If only a fixed width (like 80 columns) were used:
 The output could appear misaligned or overflow on smaller screens.
 
 The display would waste space or look compressed on larger terminals.
-Dynamic detection ensures a responsive layout across environments..
+Dynamic detection ensures a responsive layout across environments.
+
+
+
+
+feature 6 :
+
+Feature-6: ls-v1.5.0 – Colorized Output Based on File Type
+1. How do ANSI escape codes work to produce color in a standard Linux terminal? Show the specific code sequence for printing text in green.
+
+ANSI escape codes are special character sequences recognized by most terminal emulators to control formatting such as color, boldness, or cursor movement.
+Each escape code begins with the ESC character (\033) followed by a series of parameters ending with an “m”, which signals the terminal to change text attributes.
+
+Example structure:
+
+\033[<style>;<foreground>;<background>m
+
+
+\033[ → Escape sequence start
+
+<style> → Text style (e.g., 0 = normal, 1 = bold)
+
+<foreground> → Text color (e.g., 32 = green)
+
+<background> → Optional background color
+
+m → Terminates the escape code
+
+To print text in green:
+
+printf("\033[0;32mHello\033[0m\n");
+
+
+Explanation:
+
+\033[0;32m → Start green color
+
+Hello → Text in green
+
+\033[0m → Reset to default terminal color
+
+2. To color an executable file, you need to check its permission bits. Explain which bits in the st_mode field you need to check to determine if a file is executable by the owner, group, or others.
+
+The st_mode field from the stat structure contains both the file type and permission bits.
+To check if a file is executable, we examine the execute permission bits using bitwise AND operations:
+
+Permission	Macro	Bitmask	Meaning
+Owner execute	S_IXUSR	0100	Owner can execute
+Group execute	S_IXGRP	0010	Group can execute
+Others execute	S_IXOTH	0001	Others can execute
+
+Example in C:
+
+struct stat fileStat;
+stat(filename, &fileStat);
+
+if (fileStat.st_mode & (S_IXUSR | S_IXGRP | S_IXOTH)) {
+    // File is executable → print in green
+}
+
